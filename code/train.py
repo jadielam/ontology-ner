@@ -64,8 +64,5 @@ def train(conf):
         trainer.set_params({'max_iterations': max_iterations})
     trainer.train()                        
 
-
-    
-
 if __name__ == "__main__":
     main()
