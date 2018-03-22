@@ -16,7 +16,7 @@ from features.w2v import W2VClusters
 
 # All capitalized constants come from this file
 
-def create_features(gaz_filepath, brown_clusters_filepath, w2v_clusters_filepath,
+def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filepath,
                     lda_model_filepath, lda_dictionary_filepath, lda_cache_filepath,
                     verbose=True, lda_window_left_size = 5, lda_window_right_size = 5
                     ):
@@ -40,7 +40,10 @@ def create_features(gaz_filepath, brown_clusters_filepath, w2v_clusters_filepath
     # Create the gazetteer. The gazetteer will contain all names from ug_names that have a higher
     # frequency among those names than among all unigrams (from ug_all).
     print_if_verbose("Creating gazetteer...")
-    attractions_gaz = Gazetteer(gaz_filepath, type = "Attractions")
+    gazetteers = []
+    for gaz_type, gaz_filepath in gazetteers_data.items():
+        gaz = Gazetteer(gaz_filepath, type = gaz_type)
+        gazetteers.append(gaz)
 
     # Load the mapping of word to brown cluster and word to brown cluster bitchain
     print_if_verbose("Loading brown clusters...")
@@ -70,13 +73,12 @@ def create_features(gaz_filepath, brown_clusters_filepath, w2v_clusters_filepath
         W2VClusterFeature(w2vc),
         BrownClusterFeature(brown),
         BrownClusterBitsFeature(brown),
-        GazetteerFeature(gaz),
         WordPatternFeature(),
         PrefixFeature(),
         SuffixFeature(),
         POSTagFeature(pos),
         LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
-    ]
+    ] + [GazetteerFeature(gaz) for gaz in gazetteers]
 
     return result
 

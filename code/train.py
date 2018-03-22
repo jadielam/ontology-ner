@@ -15,8 +15,6 @@ import features.features as features
 
 random.seed(42)
 
-
-
 def main():
     '''
     Main function that reads parameter and starts the training process
@@ -27,7 +25,7 @@ def main():
     train(conf)
     
 def train(conf):
-    gaz_filepath = conf['gaz_filepath']
+    gaz_filepaths = conf['gaz_filepath']
     brown_clusters_filepath = conf['brown_clusters_filepath']
     w2v_clusters_filepath = conf['w2v_clusters_filepath']
     lda_model_filepath = conf['lda_model_filepath']
@@ -43,7 +41,7 @@ def train(conf):
     trainer = pycrfsuite.Trainer(verbose = True)
 
     print("Creating features... ")
-    feature_generators = features.create_features(gaz_filepath, brown_clusters_filepath,
+    feature_generators = features.create_features(gaz_filepaths, brown_clusters_filepath,
                                     w2v_clusters_filepath, lda_model_filepath, 
                                     lda_dictionary_filepath, lda_cache_filepath, 
                                     verbose = True, lda_window_left_size = 5,
