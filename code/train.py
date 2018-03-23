@@ -60,7 +60,7 @@ def train(conf):
     print("Training... ")
     if max_iterations is not None and max_iterations > 0:
         trainer.set_params({'max_iterations': max_iterations})
-    trainer.train()                        
+    trainer.train()                      
 
 if __name__ == "__main__":
     main()

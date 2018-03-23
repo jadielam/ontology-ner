@@ -78,7 +78,15 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         SuffixFeature(),
         POSTagFeature(pos),
         LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
-    ] + [GazetteerFeature(gaz) for gaz in gazetteers]
+    ] + [
+        GazetteerOfficialName(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerSynonym(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceSynonym(gaz) for gaz in gazetteers
+    ]
 
     return result
 
@@ -321,7 +329,7 @@ class BrownClusterBitsFeature(object):
         """
         return self.brown_clusters.get_bitchain_of(token.word, "")
 
-class GazetteerFeature(object):
+class GazetteerOfficialName(object):
     """Generates a feature that describes, whether a token is contained in the gazetteer."""
     def __init__(self, gazetteer):
         """Instantiates a new object of this feature generator.
@@ -329,7 +337,7 @@ class GazetteerFeature(object):
             gazetteer: An instance of Gazetteer as defined in gazetteer.py that can be queried
                 to estimate whether a word is contained in an Gazetteer.
         """
-        self.gazetteer = gazetteer
+        self.g = gazetteer
 
     def convert_window(self, window):
         """Converts a Window object into a list of lists of features, where features are strings.
@@ -343,17 +351,38 @@ class GazetteerFeature(object):
         """
         result = []
         for token in window.tokens:
-            result.append(["g=%d" % (int(self.is_in_gazetteer(token)))])
+            result.append(["g_official_{}=%d".format(self.g.type) % (int(self.g.contains_as_official_name(token.word)))])
         return result
 
-    def is_in_gazetteer(self, token):
-        """Returns True if the token/word appears in the gazetteer.
-        Args:
-            token: The token/word.
-        Returns:
-            True if the word appears in the gazetter, False otherwise.
-        """
-        return self.gazetteer.contains(token.word)
+class GazetteerSynonym(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["g_synonym_{}=%d".format(self.g.type) % (int(self.g.contains_as_synonym(token.word)))])
+        return result
+
+class GazetteerMinimumDistanceOfficialName(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["g_official_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_official_name(token.word)))])
+        return result
+
+class GazetteerMinimumDistanceSynonym(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["g_official_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_synonym(token.word)))])
+        return result
 
 class WordPatternFeature(object):
     """Generates a feature that describes the word pattern of a feature.
