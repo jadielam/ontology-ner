@@ -2,10 +2,11 @@
 # docker build -t training -f Dockerfile .
 
 # To run:
-# nvidia-docker run -it training
+# docker run -it training
 
 FROM ubuntu
 
+RUN apt-get -y update && apt-get -y install vim
 RUN apt-get -y update --fix-missing && \
     apt-get install -y \
         python-pip \
