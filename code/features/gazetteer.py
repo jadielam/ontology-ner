@@ -94,8 +94,8 @@ class Gazetteer(object):
                 if len(entries) > 0:
                     self.official_names_set.add(entries[0])
                     self.official_names_trie.insert(entries[0])
-                    self.synonyms_set.update(entries[1:])
-                    for entry in entries[1:]:
+                    self.synonyms_set.update(entries[0:])
+                    for entry in entries[0:]:
                         self.synonyms_trie.insert(entry)
 
     def contains_as_official_name(self, phrase):

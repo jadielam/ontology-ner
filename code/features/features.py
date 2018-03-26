@@ -70,14 +70,14 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         ContainsPunctuationFeature(),
         OnlyDigitsFeature(),
         OnlyPunctuationFeature(),
-        W2VClusterFeature(w2vc),
-        BrownClusterFeature(brown),
-        BrownClusterBitsFeature(brown),
+        #W2VClusterFeature(w2vc),
+        #BrownClusterFeature(brown),
+        #BrownClusterBitsFeature(brown),
         WordPatternFeature(),
         PrefixFeature(),
         SuffixFeature(),
         POSTagFeature(pos),
-        LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
+        #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
     ] + [
         GazetteerOfficialName(gaz) for gaz in gazetteers
     ] + [

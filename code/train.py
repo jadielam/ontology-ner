@@ -25,13 +25,13 @@ def main():
     train(conf)
     
 def train(conf):
-    gaz_filepaths = conf['gaz_filepath']
-    brown_clusters_filepath = conf['brown_clusters_filepath']
-    w2v_clusters_filepath = conf['w2v_clusters_filepath']
-    lda_model_filepath = conf['lda_model_filepath']
-    lda_dictionary_filepath = conf['lda_dictionary_filepath']
-    lda_cache_filepath = conf['lda_cache_filepath']
-    articles_filepath = conf['articles_filepath']
+    gaz_filepaths = conf.get('gaz_filepaths', None)
+    brown_clusters_filepath = conf.get('brown_clusters_filepath', None)
+    w2v_clusters_filepath = conf.get('w2v_clusters_filepath', None)
+    lda_model_filepath = conf.get('lda_model_filepath', None)
+    lda_dictionary_filepath = conf.get('lda_dictionary_filepath', None)
+    lda_cache_filepath = conf.get('lda_cache_filepath', None)
+    articles_filepath = conf.get('articles_filepath')
     window_size = conf['window_size']
     count_windows_train = conf['count_windows_train']
     count_windows_test = conf['count_windows_test']
