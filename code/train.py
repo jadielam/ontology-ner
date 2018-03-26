@@ -51,7 +51,7 @@ def train(conf):
 
     print("Loading windows... ")
     windows = load_windows(load_articles(articles_filepath), window_size,
-                            feature_generators, only_labeled_windows = True)
+                            feature_generators, only_labeled_windows = False)
 
     print("Adding example windows (up to max %d)..." % (count_windows_train))
     examples = generate_examples(windows, skip_chain_left, skip_chain_right, nb_append = count_windows_train,

@@ -59,11 +59,7 @@ def load_windows(articles, window_size, features=None, every_nth_window=1,
         # count how many labels there are in the article
         count = article.count_labels()
 
-        if count / len(article.tokens) >= 0.10:
-            # ignore articles with too many labels, because they are too unrealistic
-            # (e.g. in Wikipedia lists of people or disambiguation sites)
-            pass
-        elif only_labeled_windows and count == 0:
+        if only_labeled_windows and count == 0:
             # ignore articles completely that have no labels at all, if that was requested via
             # the parameters
             pass
@@ -278,7 +274,7 @@ class Token(object):
             (See Window.apply_features().)
     """
     def __init__(self, original, no_ne_label = 'O', 
-                remove_bio_encoding = True, labels = ['PER', 'LOC', 'ORG', 'MISC']):
+                remove_bio_encoding = True, labels = ['PARK', 'CHAR', 'ATT', 'REST']):
         """Initialize a new Token object.
         Args:
             original: The original word as found in the text document, including the label,
