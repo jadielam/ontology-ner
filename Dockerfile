@@ -25,6 +25,7 @@ RUN apt-get -y update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN python -m nltk.downloader averaged_perceptron_tagger
 #WORKDIR /workspace
 #RUN chmod -R a+w /workspace
 

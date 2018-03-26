@@ -54,15 +54,20 @@ def train(conf):
                             feature_generators, only_labeled_windows = True)
 
     print("Adding example windows (up to max %d)..." % (count_windows_train))
-    examples = generate_examples(windows, skip_chain_left, skip_chain_right nb_append = count_windows_train,
+    examples = generate_examples(windows, skip_chain_left, skip_chain_right, nb_append = count_windows_train,
                                     nb_skip = count_windows_test, verbose = True)
+    
     for feature_values_lists, labels in examples:
+        print(feature_values_lists)
         trainer.append(feature_values_lists, labels)
 
     print("Training... ")
     if max_iterations is not None and max_iterations > 0:
-        trainer.set_params({'max_iterations': max_iterations})
-    trainer.train()                      
+        trainer.set_params({'max_iterations': max_iterations,
+                            'c1': 1.0,
+                            'c2': 1e-4,
+                            'feature.minfreq': 0 })
+    trainer.train("train")                      
 
 if __name__ == "__main__":
     main()
