@@ -35,6 +35,8 @@ def train(conf):
     window_size = conf['window_size']
     count_windows_train = conf['count_windows_train']
     count_windows_test = conf['count_windows_test']
+    skip_chain_left = conf['skip_chain_left']
+    skip_chain_right = conf['skip_chain_right']
     max_iterations = conf.get('max_iterations', None)
 
     print("Creating trainer... ")
@@ -52,7 +54,7 @@ def train(conf):
                             feature_generators, only_labeled_windows = True)
 
     print("Adding example windows (up to max %d)..." % (count_windows_train))
-    examples = generate_examples(windows, nb_append = count_windows_train,
+    examples = generate_examples(windows, skip_chain_left, skip_chain_right nb_append = count_windows_train,
                                     nb_skip = count_windows_test, verbose = True)
     for feature_values_lists, labels in examples:
         trainer.append(feature_values_lists, labels)

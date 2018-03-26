@@ -46,17 +46,17 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         gazetteers.append(gaz)
 
     # Load the mapping of word to brown cluster and word to brown cluster bitchain
-    print_if_verbose("Loading brown clusters...")
-    brown = BrownClusters(brown_clusters_filepath)
+    #print_if_verbose("Loading brown clusters...")
+    #brown = BrownClusters(brown_clusters_filepath)
 
     # Load the mapping of word to word2vec cluster
-    print_if_verbose("Loading W2V clusters...")
-    w2vc = W2VClusters(w2v_clusters_filepath)
+    #print_if_verbose("Loading W2V clusters...")
+    #w2vc = W2VClusters(w2v_clusters_filepath)
 
     # Load the wrapper for the gensim LDA
-    print_if_verbose("Loading LDA...")
-    lda = LdaWrapper(lda_model_filepath, lda_dictionary_filepath,
-                     lda_cache_filepath)
+    #print_if_verbose("Loading LDA...")
+    #lda = LdaWrapper(lda_model_filepath, lda_dictionary_filepath,
+    #                 lda_cache_filepath)
 
     # Load the wrapper for the stanford POS tagger
     print_if_verbose("Loading POS-Tagger...")

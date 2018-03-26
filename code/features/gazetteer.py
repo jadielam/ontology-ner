@@ -10,9 +10,6 @@ class TrieNode:
         self.word = None
         self.children = {}
 
-        global NodeCount
-        NodeCount += 1
-
     def insert(self, word):
         node = self
         for letter in word:
