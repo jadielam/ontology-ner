@@ -58,7 +58,6 @@ def train(conf):
                                     nb_skip = count_windows_test, verbose = True)
     
     for feature_values_lists, labels in examples:
-        print(feature_values_lists)
         trainer.append(feature_values_lists, labels)
 
     print("Training... ")

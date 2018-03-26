@@ -87,7 +87,10 @@ class Gazetteer(object):
 
         with open(file_path) as f:
             for line in f:
-                entries = line.split(",")
+                lower_line = line.lower()
+                entries = lower_line.split(",")
+                entries = [a.strip() for a in entries]
+
                 if len(entries) > 0:
                     self.official_names_set.add(entries[0])
                     self.official_names_trie.insert(entries[0])
@@ -103,21 +106,21 @@ class Gazetteer(object):
         Returns:
             True if the word is contained in the Gazetteer, False otherwise.
         """
-        return phrase in self.official_names_set
+        return phrase.lower() in self.official_names_set
     
     def contains_as_synonym(self, phrase):
         '''
         Returns whether the Gazetteer contains the entire phrase or not
         as a synonym
         '''
-        return phrase in self.synonyms_set
+        return phrase.lower() in self.synonyms_set
     
     def minimum_distance_to_official_name(self, phrase):
         '''
         Returns the minimum Levenshtein distance value from the phrase to 
         any entry in the official_names_list.
         '''
-        results = search(self.official_names_trie, phrase, 5)
+        results = search(self.official_names_trie, phrase.lower(), 10)
         if len(results) > 0:
             return results[0][1]
         else:
@@ -128,7 +131,7 @@ class Gazetteer(object):
         Returns the minimum Levenshtein distance value from the phrase to
         any entry in the synonym name list.
         '''
-        results = search(self.synonyms_trie, phrase, 5)
+        results = search(self.synonyms_trie, phrase.lower(), 10)
         if len(results) > 0:
             return results[0][1]
         else:
