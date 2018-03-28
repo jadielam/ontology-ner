@@ -374,7 +374,7 @@ class GazetteerSynonym(object):
             result.append(["g_synonym_{}=%f".format(self.g.type) % (int(self.g.contains_as_synonym(token.word)))])
         return result
 
-class GazetterClosestToken(object):
+class GazetteerClosestToken(object):
     def __init__(self, gazetteer):
         self.g = gazetteer
     def convert_window(self, window):
