@@ -379,7 +379,7 @@ class GazetteerMinimumDistanceOfficialName(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_official_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_official_name(token.word)))])
+            result.append(["g_official_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_official_name(token.word)])
         return result
 
 class GazetteerMinimumDistanceSynonym(object):
@@ -389,7 +389,7 @@ class GazetteerMinimumDistanceSynonym(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_synonym_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_synonym(token.word)))])
+            result.append(["g_synonym_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
         return result
 
 class GazetteerMinimumDistanceToken(object):
@@ -399,7 +399,7 @@ class GazetteerMinimumDistanceToken(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_token_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_token(token.word)))])
+            result.append(["g_token_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_token(token.word)])
         return result
 
 class GazetteerMinimumDistanceNGram(object):
@@ -415,7 +415,9 @@ class GazetteerMinimumDistanceNGram(object):
         ngrams = self._find_ngrams(window.tokens, self.ngram)
         for token_ngram in ngrams:
             phrase = " ".join([token.word for token in token_ngram])
-            result.append(result.append(["g_{}gram_distance=%d".format(self.ngram) % (int(self.g.minimum_distance_to_synonym(phrase)))]))
+            result.append(["g_{}gram_distance=%d".format(self.ngram) % self.g.minimum_distance_to_synonym(phrase)])
+        for _ in range(len(result), len(window.tokens)):
+            result.append(["g_{}gram_distance=%d".format(self.ngram) % 1.0])
         return result
 
 
