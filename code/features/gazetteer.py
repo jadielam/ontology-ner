@@ -120,19 +120,24 @@ class Gazetteer(object):
         Returns the minimum Levenshtein distance value from the phrase to 
         any entry in the official_names_list.
         '''
-        results = search(self.official_names_trie, phrase.lower(), 10)
+        distance_percentage = 0.15
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self.official_names_trie, phrase.lower(), max_distance)
+
         if len(results) > 0:
-            return results[0][1]
+            return results[0][1] / float(len(phrase))
         else:
-            return 999
+            return 1.0
     
     def minimum_distance_to_synonym(self, phrase):
         '''
         Returns the minimum Levenshtein distance value from the phrase to
         any entry in the synonym name list.
         '''
-        results = search(self.synonyms_trie, phrase.lower(), 10)
+        distance_percentage = 0.15
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self.synonyms_trie, phrase.lower(), max_distance)
         if len(results) > 0:
-            return results[0][1]
+            return results[0][1] / float(len(phrase))
         else:
-            return 999
+            return 1.0
