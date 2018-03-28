@@ -64,9 +64,9 @@ class PosTagger(object):
         elif total_length < self.min_string_length:
             raise Exception("String to POS-tag is too short (%d vs min "\
                             "%d)." % (total_length, self.min_string_length))
-
+        
         return self.tagger.tag(tokens)
-
+        
     def synchronize_cache(self):
         """Synchronizes the shelve cache on the HDD with the version in the RAM."""
         self.cache.sync()

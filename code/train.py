@@ -57,8 +57,10 @@ def train(conf):
     examples = generate_examples(windows, skip_chain_left, skip_chain_right, nb_append = count_windows_train,
                                     nb_skip = count_windows_test, verbose = True)
     
+    counter = 0
     for feature_values_lists, labels in examples:
-        trainer.append(feature_values_lists, labels)
+        counter += 1
+        trainer.append(feature_values_lists, labels, group = counter % 10)
 
     print("Training... ")
     if max_iterations is not None and max_iterations > 0:
@@ -66,7 +68,7 @@ def train(conf):
                             'c1': 1.0,
                             'c2': 1e-4,
                             'feature.minfreq': 0 })
-    trainer.train("train")                      
+    trainer.train("train", holdout = 1)                      
 
 if __name__ == "__main__":
     main()
