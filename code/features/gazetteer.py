@@ -74,6 +74,7 @@ class Gazetteer(object):
         self.synonyms_set = set()
         self.official_names_trie = TrieNode()
         self.synonyms_trie = TrieNode()
+        self.tokens_trie = TrieNode()
         self.fill_gazetteer(file_path)
 
     def fill_gazetteer(self, file_path):
@@ -97,6 +98,11 @@ class Gazetteer(object):
                     self.synonyms_set.update(entries[0:])
                     for entry in entries[0:]:
                         self.synonyms_trie.insert(entry)
+                    
+                    for entry in entries:
+                        tokens = entry.split()
+                        for token in tokens:
+                            self.tokens_trie.insert(token)
 
     def contains_as_official_name(self, phrase):
         """Returns whether the Gazetteer contains the entire phrase or not
@@ -115,12 +121,22 @@ class Gazetteer(object):
         '''
         return phrase.lower() in self.synonyms_set
     
+    def minimum_distance_to_token(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self.tokens_trie, phrase.lower(), max_distance)
+
+        if len(results) > 0:
+            return results[0][1] / float(len(phrase))
+        else:
+            return 1.0
+    
     def minimum_distance_to_official_name(self, phrase):
         '''
         Returns the minimum Levenshtein distance value from the phrase to 
         any entry in the official_names_list.
         '''
-        distance_percentage = 0.15
+        distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self.official_names_trie, phrase.lower(), max_distance)
 
@@ -134,7 +150,7 @@ class Gazetteer(object):
         Returns the minimum Levenshtein distance value from the phrase to
         any entry in the synonym name list.
         '''
-        distance_percentage = 0.15
+        distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self.synonyms_trie, phrase.lower(), max_distance)
         if len(results) > 0:

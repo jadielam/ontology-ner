@@ -86,6 +86,14 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
     ] + [
         GazetteerMinimumDistanceSynonym(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
     ]
 
     return result
@@ -381,8 +389,35 @@ class GazetteerMinimumDistanceSynonym(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_official_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_synonym(token.word)))])
+            result.append(["g_synonym_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_synonym(token.word)))])
         return result
+
+class GazetteerMinimumDistanceToken(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["g_token_distance_{}=%d".format(self.g.type) % (int(self.g.minimum_distance_to_token(token.word)))])
+        return result
+
+class GazetteerMinimumDistanceNGram(object):
+    def __init__(self, gazetteer, ngram):
+        self.g = gazetteer
+        self.ngram = ngram
+    
+    def _find_ngrams(self, input_list, ngram):
+        return zip(*[input_list[i:] for i in range(ngram)])
+
+    def convert_window(self, window):
+        result = []
+        ngrams = self._find_ngrams(window.tokens, self.ngram)
+        for token_ngram in ngrams:
+            phrase = " ".join([token.word for token in token_ngram])
+            result.append(result.append(["g_{}gram_distance=%d".format(self.ngram) % (int(self.g.minimum_distance_to_synonym(phrase)))]))
+        return result
+
 
 class WordPatternFeature(object):
     """Generates a feature that describes the word pattern of a feature.
