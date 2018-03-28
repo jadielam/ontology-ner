@@ -89,6 +89,8 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
     ] + [
         GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
     ] + [
+        GazetteerClosestToken(gaz) for gaz in gazetteers
+    ] + [
         GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
     ] + [
         GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
@@ -359,7 +361,7 @@ class GazetteerOfficialName(object):
         """
         result = []
         for token in window.tokens:
-            result.append(["g_official_{}=%d".format(self.g.type) % (int(self.g.contains_as_official_name(token.word)))])
+            result.append(["g_official_{}=%f".format(self.g.type) % (int(self.g.contains_as_official_name(token.word)))])
         return result
 
 class GazetteerSynonym(object):
@@ -369,7 +371,16 @@ class GazetteerSynonym(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_synonym_{}=%d".format(self.g.type) % (int(self.g.contains_as_synonym(token.word)))])
+            result.append(["g_synonym_{}=%f".format(self.g.type) % (int(self.g.contains_as_synonym(token.word)))])
+        return result
+
+class GazetterClosestToken(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["g_closest_{}=%s".format(self.g.type) % self.g.closest_token(token.word)])
         return result
 
 class GazetteerMinimumDistanceOfficialName(object):
@@ -379,7 +390,7 @@ class GazetteerMinimumDistanceOfficialName(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_official_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_official_name(token.word)])
+            result.append(["g_official_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_official_name(token.word)])
         return result
 
 class GazetteerMinimumDistanceSynonym(object):
@@ -389,7 +400,7 @@ class GazetteerMinimumDistanceSynonym(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_synonym_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
+            result.append(["g_synonym_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
         return result
 
 class GazetteerMinimumDistanceToken(object):
@@ -399,7 +410,7 @@ class GazetteerMinimumDistanceToken(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_token_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_token(token.word)])
+            result.append(["g_token_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_token(token.word)])
         return result
 
 class GazetteerMinimumDistanceNGram(object):
@@ -415,11 +426,10 @@ class GazetteerMinimumDistanceNGram(object):
         ngrams = self._find_ngrams(window.tokens, self.ngram)
         for token_ngram in ngrams:
             phrase = " ".join([token.word for token in token_ngram])
-            result.append(["g_{}gram_distance=%d".format(self.ngram) % self.g.minimum_distance_to_synonym(phrase)])
+            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % self.g.minimum_distance_to_synonym(phrase)])
         for _ in range(len(result), len(window.tokens)):
-            result.append(["g_{}gram_distance=%d".format(self.ngram) % 1.0])
+            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % 1.0])
         return result
-
 
 class WordPatternFeature(object):
     """Generates a feature that describes the word pattern of a feature.

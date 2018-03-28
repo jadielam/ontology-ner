@@ -68,7 +68,7 @@ def train(conf):
                             'c1': 1.0,
                             'c2': 1e-4,
                             'feature.minfreq': 0 })
-    trainer.train("train", holdout = 1)                      
+    trainer.train("train", holdout = 1)                    
 
 if __name__ == "__main__":
     main()

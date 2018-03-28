@@ -145,6 +145,16 @@ class Gazetteer(object):
         else:
             return 1.0
     
+    def closest_token(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self.tokens_trie, phrase.lower(), max_distance)
+
+        if len(results) > 0:
+            return results[0][0]
+        else:
+            "None"
+
     def minimum_distance_to_synonym(self, phrase):
         '''
         Returns the minimum Levenshtein distance value from the phrase to

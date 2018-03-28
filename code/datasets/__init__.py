@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 #from unidecode import unidecode
 from collections import Counter
+import sys
 
 def split_to_chunks(of_list, chunk_size):
     """Splits a list to smaller chunks.
@@ -112,11 +113,12 @@ def generate_examples(windows, skip_chain_left, skip_chain_right, nb_append=None
             # print message every nth window
             # and stop if nb_append is reached
             added += 1
-            if verbose and added % 500 == 0:
+            if verbose and added % 200 == 0:
                 if nb_append is None:
                     print("Generated %d examples" % (added))
                 else:
                     print("Generated %d of max %d examples" % (added, nb_append))
+                    sys.stdout.flush()
             if nb_append is not None and added == nb_append:
                 break
 
