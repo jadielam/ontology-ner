@@ -276,16 +276,17 @@ class Token(object):
             (See Window.apply_features().)
     """
     def __init__(self, original, no_ne_label = 'O', 
-                remove_bio_encoding = False, labels = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE']):
+                remove_bio_encoding = False, labels = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE', 'RESO']):
         """Initialize a new Token object.
         Args:
             original: The original word as found in the text document, including the label,
                 e.g. "foo", "John/PER".
         """
         encoded_labels = []
-        for label in labels:
-            encoded_labels.append("B-" + label)
-            encoded_labels.append("I-" + label)
+        if not remove_bio_encoding:
+            for label in labels:
+                encoded_labels.append("B-" + label)
+                encoded_labels.append("I-" + label)
         self.original = original
         self.word = original
         self.label = no_ne_label
