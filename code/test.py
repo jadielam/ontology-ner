@@ -9,7 +9,7 @@ import sys
 import json
 
 from datasets import load_windows, load_articles, generate_examples, Article, Window
-import model.features as features
+import features.features as features
 
 # All capitalized constants come from this file
 
@@ -43,7 +43,7 @@ def main():
         query_text = input("Your text: ")
         if query_text == "exit":
             break
-
+        query_text = query_text.lower()
         article = Article(query_text)
         window = Window(article.tokens)
         window.apply_features(feature_generators)
@@ -54,3 +54,6 @@ def main():
             feature_values_lists.append(fvl)
         tagged_sequence = tagger.tag(feature_values_lists)
         print(tagged_sequence)
+
+if __name__ == "__main__":
+    main()
