@@ -40,7 +40,7 @@ def main():
                                     lda_window_right_size = 5)
                                     
     while True:
-        query_text = input("Your text: ")
+        query_text = raw_input("Your text: ")
         if query_text == "exit":
             break
         query_text = query_text.lower()
