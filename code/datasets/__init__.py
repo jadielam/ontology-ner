@@ -276,7 +276,7 @@ class Token(object):
             (See Window.apply_features().)
     """
     def __init__(self, original, no_ne_label = 'O', 
-                remove_bio_encoding = False, labels = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE', 'RESO']):
+                remove_bio_encoding = False, labels = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE', 'RESO', 'PLAC']):
         """Initialize a new Token object.
         Args:
             original: The original word as found in the text document, including the label,
