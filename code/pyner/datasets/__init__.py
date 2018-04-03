@@ -67,6 +67,7 @@ def load_windows(articles, window_size, features=None, every_nth_window=1,
         else:
             # split the tokens in the article to windows
             token_windows = split_to_chunks(article.tokens, window_size)
+            token_windows = list(token_windows)
             for token_window in token_windows:
                 window = Window([token for token in token_window])
                 # ignore the window if it contains no labels and that was requested via parameters
