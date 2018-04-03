@@ -38,6 +38,7 @@ def train(conf):
     skip_chain_left = conf['skip_chain_left']
     skip_chain_right = conf['skip_chain_right']
     max_iterations = conf.get('max_iterations', None)
+    features_to_extract = conf.get('features_to_extract', None)
 
     print("Creating trainer... ")
     trainer = pycrfsuite.Trainer(verbose = True)
@@ -47,7 +48,7 @@ def train(conf):
                                     w2v_clusters_filepath, lda_model_filepath, 
                                     lda_dictionary_filepath, lda_cache_filepath, 
                                     verbose = True, lda_window_left_size = 5,
-                                    lda_window_right_size = 5)
+                                    lda_window_right_size = 5, features_to_extract = features_to_extract)
 
     print("Loading windows... ")
     windows = load_windows(load_articles(articles_filepath), window_size,
@@ -58,7 +59,7 @@ def train(conf):
     examples = generate_examples(windows, skip_chain_left, skip_chain_right, nb_append = count_windows_train,
                                     nb_skip = count_windows_test, verbose = True)
     examples = list(examples)
-    
+
     counter = 0
     for feature_values_lists, labels in examples:
         counter += 1

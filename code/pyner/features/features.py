@@ -18,8 +18,8 @@ from pyner.features.w2v import W2VClusters
 
 def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filepath,
                     lda_model_filepath, lda_dictionary_filepath, lda_cache_filepath,
-                    verbose=True, lda_window_left_size = 5, lda_window_right_size = 5
-                    ):
+                    verbose=True, lda_window_left_size = 5, lda_window_right_size = 5,
+                    features_to_extract = None):
     """This method creates all feature generators.
     The feature generators will be used to convert windows of tokens to their string features.
     This function may run for a few minutes.
@@ -78,25 +78,25 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         SuffixFeature(),
         POSTagFeature(pos),
         #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
-    ] + [
-        GazetteerOfficialName(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerSynonym(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceSynonym(gaz) for gaz in gazetteers
-    ] + [
+    ] #+ [
+      #  GazetteerOfficialName(gaz) for gaz in gazetteers
+    #] + [
+    #    GazetteerSynonym(gaz) for gaz in gazetteers
+    #] + [
+    #    GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
+    #] + [
+    #    GazetteerMinimumDistanceSynonym(gaz) for gaz in gazetteers
+    #] + [
         GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
     ] + [
         GazetteerClosestToken(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
-    ]
+    ] #+ [
+    #    GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
+    #] + [
+    #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
+    #] + [
+    #    GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
+    #]
 
     return result
 
