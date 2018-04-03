@@ -78,7 +78,7 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         SuffixFeature(),
         POSTagFeature(pos),
         #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
-    ] #+ [
+    ] + [
       #  GazetteerOfficialName(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerSynonym(gaz) for gaz in gazetteers

@@ -48,10 +48,15 @@ def train(conf):
                                     w2v_clusters_filepath, lda_model_filepath, 
                                     lda_dictionary_filepath, lda_cache_filepath, 
                                     verbose = True, lda_window_left_size = 5,
-                                    lda_window_right_size = 5, features_to_extract = features_to_extract)
+                                    lda_window_right_size = 5, 
+                                    features_to_extract = features_to_extract)
+
+    print("Loading articles... ")
+    articles = load_articles(articles_filepath)
+    articles = list(articles)
 
     print("Loading windows... ")
-    windows = load_windows(load_articles(articles_filepath), window_size,
+    windows = load_windows(articles, window_size,
                             feature_generators, only_labeled_windows = False)
     windows = list(windows)
 
