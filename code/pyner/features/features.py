@@ -380,7 +380,9 @@ class GazetteerClosestToken(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_closest_{}=%s".format(self.g.type) % self.g.closest_token(token.word)])
+            closest_token = self.g.closest_token(token.word)
+            result.append(["g_closest_{}=%s".format(self.g.type) % closest_token])
+            result.append(["g_token_position_{}=%d".format(self.g.type) % self.g.token_position_in_name(closest_token)])
         return result
 
 class GazetteerMinimumDistanceOfficialName(object):
@@ -401,6 +403,7 @@ class GazetteerMinimumDistanceSynonym(object):
         result = []
         for token in window.tokens:
             result.append(["g_synonym_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
+            
         return result
 
 class GazetteerMinimumDistanceToken(object):
@@ -411,6 +414,7 @@ class GazetteerMinimumDistanceToken(object):
         result = []
         for token in window.tokens:
             result.append(["g_token_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_token(token.word)])
+            
         return result
 
 class GazetteerMinimumDistanceNGram(object):

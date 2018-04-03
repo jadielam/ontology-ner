@@ -75,6 +75,7 @@ class Gazetteer(object):
         self.synonyms_set = set()
         self.official_names_trie = TrieNode()
         self.synonyms_trie = TrieNode()
+        self.position_in_name = {}
         self.tokens_trie = TrieNode()
         self.fill_gazetteer(file_path)
 
@@ -105,8 +106,9 @@ class Gazetteer(object):
                         entry = entries[i]
                         self.synonyms_to_official_name[entry] = official_name
                         tokens = entry.split()
-                        for token in tokens:
+                        for it, token in enumerate(tokens):
                             self.tokens_trie.insert(token)
+                            self.position_in_name[token] = it
 
     def contains_as_official_name(self, phrase):
         """Returns whether the Gazetteer contains the entire phrase or not
@@ -167,6 +169,11 @@ class Gazetteer(object):
             return results[0][0]
         else:
             "None"
+    
+    def token_position_in_name(self, token):
+        if token in self.position_in_name:
+            return self.position_in_name[token]
+        return -1
 
     def minimum_distance_to_synonym(self, phrase):
         '''
