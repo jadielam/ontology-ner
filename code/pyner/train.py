@@ -10,8 +10,8 @@ import sys
 import json
 import pycrfsuite
 
-from datasets import load_windows, load_articles, generate_examples
-import features.features as features
+from pyner.datasets import load_windows, load_articles, generate_examples
+import pyner.features.features as features
 
 random.seed(42)
 

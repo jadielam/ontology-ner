@@ -8,11 +8,11 @@ Contains:
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
 
-from features.brown import BrownClusters
-from features.gazetteer import Gazetteer
-from features.lda import LdaWrapper
-from features.pos import PosTagger
-from features.w2v import W2VClusters
+from pyner.features.brown import BrownClusters
+from pyner.features.gazetteer import Gazetteer
+from pyner.features.lda import LdaWrapper
+from pyner.features.pos import PosTagger
+from pyner.features.w2v import W2VClusters
 
 # All capitalized constants come from this file
 

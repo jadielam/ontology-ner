@@ -8,12 +8,17 @@ from sklearn.preprocessing import LabelBinarizer
 import sys
 import json
 
-from datasets import load_windows, load_articles, generate_examples, Article, Window
-import features.features as features
-
-# All capitalized constants come from this file
+from pyner.datasets import load_windows, load_articles, generate_examples, Article, Window
+import pyner.features.features as features
+from pyner.features.gazetteer import Gazetteer
 
 random.seed(42)
+
+def transcribe_text(original_text, output_tags, gaz, tags_to_gaz_type_d):
+    original_tokens = original_text.split()
+    return original_text
+
+
 
 def main():
     with open(sys.argv[1]) as f:
@@ -38,7 +43,28 @@ def main():
                                     lda_dictionary_filepath, lda_cache_filepath, 
                                     verbose = True, lda_window_left_size = 5,
                                     lda_window_right_size = 5)
-                                    
+
+
+    gaz_d = {}
+    for gaz_type, gaz_filepath in gaz_filepaths.items():
+        gaz = Gazetteer(gaz_filepath, type = gaz_type)
+        gaz_d[gaz_type] = gaz 
+
+    tag_to_gaz_type_d = {
+        'B-CHAR': 'characters',
+        'I-CHAR': 'characters',
+        'B-PARK': 'parks',
+        'I-PARK': 'parks',
+        'B-ATTR': 'attractions',
+        'I-ATTR': 'attractions',
+        'B-REST': 'restaurants',
+        'I-REST': 'restaurants',
+        'B-ENTE': 'entertainment',
+        'I-ENTE': 'entertainment',
+        'B-RESO': 'resorts',
+        'I-RESO': 'resorts'
+    } 
+
     while True:
         query_text = raw_input("Your text: ")
         if query_text == "exit":
@@ -53,7 +79,9 @@ def main():
             fvl = window.get_feature_values_list(word_idx, skip_chain_left, skip_chain_right)
             feature_values_lists.append(fvl)
         tagged_sequence = tagger.tag(feature_values_lists)
-        print(tagged_sequence)
+        print("Tagged: {}".format(tagged_sequence))
+        transcribed_sentence = transcribe_text(query_text, tagged_sequence, gaz_d, tags_to_gaz_type_d)
+        print("Transcribed: {}".format(transcribed_sentence))
 
 if __name__ == "__main__":
     main()

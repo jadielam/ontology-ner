@@ -70,6 +70,7 @@ class Gazetteer(object):
                 people).
         """
         self.type = type
+        self.synonyms_to_official_name = dict()
         self.official_names_set = set()
         self.synonyms_set = set()
         self.official_names_trie = TrieNode()
@@ -99,7 +100,10 @@ class Gazetteer(object):
                     for entry in entries[0:]:
                         self.synonyms_trie.insert(entry)
                     
-                    for entry in entries:
+                    for i in range(len(entries)):
+                        official_name = entries[0]
+                        entry = entries[i]
+                        self.synonyms_to_official_name[entry] = official_name
                         tokens = entry.split()
                         for token in tokens:
                             self.tokens_trie.insert(token)
@@ -145,6 +149,15 @@ class Gazetteer(object):
         else:
             return 1.0
     
+    def closest_official_name(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self.synonyms_trie, phrase.lower(), max_distance)
+        if len(results) > 0:
+            return self.synonyms_to_official_name[results[0][0]]
+        else:
+            return "NONE"
+
     def closest_token(self, phrase):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
