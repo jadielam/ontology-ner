@@ -90,7 +90,10 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
     ] + [
         GazetteerClosestToken(gaz) for gaz in gazetteers
-    ] #+ [
+    ] + [
+        GazetteerTokenPosition(gaz) for gaz in gazetteers
+    ] 
+    #+ [
     #    GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
@@ -382,8 +385,18 @@ class GazetteerClosestToken(object):
         for token in window.tokens:
             closest_token = self.g.closest_token(token.word)
             result.append(["g_closest_{}=%s".format(self.g.type) % closest_token])
+        return result
+
+class GazetteerTokenPosition(object):
+    def __init__(self, gazetteer):
+        self.g = gazetteer
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            closest_token = self.g.closest_token(token.word)
             result.append(["g_token_position_{}=%d".format(self.g.type) % self.g.token_position_in_name(closest_token)])
         return result
+    
 
 class GazetteerMinimumDistanceOfficialName(object):
     def __init__(self, gazetteer):
