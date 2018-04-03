@@ -36,7 +36,7 @@ def search_recursive(node, letter, word, previous_row, results, max_cost):
 
     # Build one row for the letter, with a column for each letter in the target
     # word, plus one for the empty string at column 0
-    for column in xrange(1, columns):
+    for column in range(1, columns):
 
         insert_cost = current_row[column - 1] + 1
         delete_cost = previous_row[column] + 1
