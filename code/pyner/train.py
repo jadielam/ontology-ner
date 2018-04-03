@@ -8,7 +8,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import random
 import sys
 import json
+import itertools
 import pycrfsuite
+
 
 from pyner.datasets import load_windows, load_articles, generate_examples
 import pyner.features.features as features
@@ -58,7 +60,7 @@ def train(conf):
     print("Loading windows... ")
     windows = load_windows(articles, window_size,
                             feature_generators, only_labeled_windows = False)
-    windows = list(windows)
+    windows = itertools.islice(windows, count_windows_train + count_windows_test)
 
     print("Adding example windows (up to max %d)..." % (count_windows_train))
     examples = generate_examples(windows, skip_chain_left, skip_chain_right, nb_append = count_windows_train,
