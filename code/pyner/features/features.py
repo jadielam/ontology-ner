@@ -104,6 +104,7 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         PrefixFeature(),
         SuffixFeature(),
         POSTagFeature(pos),
+        WordFeature(),
         #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
     ] + [
       #  GazetteerOfficialName(gaz) for gaz in gazetteers
@@ -150,6 +151,15 @@ class StartsWithUppercaseFeature(object):
             result.append(["swu=%d" % (int(token.word[:1].istitle()))])
         return result
 
+class WordFeature(object):
+    def __init__(self):
+        pass
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            result.append(["word_feature=%s" % token.word])
+        return result
+    
 class TokenLengthFeature(object):
     """Generates a feature that describes the character length of a token."""
     def __init__(self, max_length=30):
