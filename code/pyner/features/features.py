@@ -119,10 +119,9 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         GazetteerClosestToken(gaz) for gaz in gazetteers
     ] + [
         GazetteerTokenPosition(gaz) for gaz in gazetteers
-    ] 
-    #+ [
-    #    GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
-    #] + [
+    ] + [
+        GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
+    ] #+ [
     #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
@@ -478,6 +477,7 @@ class GazetteerMinimumDistanceNGram(object):
     def __init__(self, gazetteer, ngram):
         self.g = gazetteer
         self.ngram = ngram
+        self.cache = Cache()
     
     def _find_ngrams(self, input_list, ngram):
         return zip(*[input_list[i:] for i in range(ngram)])
@@ -487,9 +487,11 @@ class GazetteerMinimumDistanceNGram(object):
         ngrams = self._find_ngrams(window.tokens, self.ngram)
         for token_ngram in ngrams:
             phrase = " ".join([token.word for token in token_ngram])
-            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % self.g.minimum_distance_to_synonym(phrase)])
-        for _ in range(len(result), len(window.tokens)):
-            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % 1.0])
+            minimum_distance = self.cache.get(phrase, None)
+            if minimum_distance is None:
+                minimum_distance = self.g.minimum_distance_to_synonym(phrase)
+                self.cache.set(phrase, minimum_distance)
+            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % minimum_distance])
         return result
 
 class WordPatternFeature(object):
