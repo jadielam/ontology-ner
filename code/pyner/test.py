@@ -19,7 +19,6 @@ def transcribe_text(original_text, output_tags, gaz, tags_to_gaz_type_d):
     return original_text
 
 
-
 def main():
     with open(sys.argv[1]) as f:
         conf = json.load(f)
@@ -80,7 +79,7 @@ def main():
             feature_values_lists.append(fvl)
         tagged_sequence = tagger.tag(feature_values_lists)
         print("Tagged: {}".format(tagged_sequence))
-        transcribed_sentence = transcribe_text(query_text, tagged_sequence, gaz_d, tags_to_gaz_type_d)
+        transcribed_sentence = transcribe_text(query_text, tagged_sequence, gaz_d, tag_to_gaz_type_d)
         print("Transcribed: {}".format(transcribed_sentence))
 
 if __name__ == "__main__":

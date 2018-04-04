@@ -4,6 +4,7 @@ A Gazetteer contains a set of words that are names (e.g. names of people)."""
 
 
 from __future__ import absolute_import, division, print_function, unicode_literals
+from array import array
 
 class TrieNode:
     def __init__(self):
@@ -30,9 +31,12 @@ def search(trie, word, max_cost):
     return results
 
 def search_recursive(node, letter, word, previous_row, results, max_cost):
-
-    columns = len( word ) + 1
-    current_row = [ previous_row[0] + 1 ]
+    '''
+    Searches recursively for the word in the trie.
+    '''
+    columns = len(word) + 1
+    current_row = array('i', [0]*(len(word) + 1))
+    current_row[0] = previous_row[0] + 1
 
     # Build one row for the letter, with a column for each letter in the target
     # word, plus one for the empty string at column 0
@@ -46,7 +50,7 @@ def search_recursive(node, letter, word, previous_row, results, max_cost):
         else:                
             replace_cost = previous_row[column - 1]
 
-        current_row.append(min(insert_cost, delete_cost, replace_cost))
+        current_row[column] = min(insert_cost, delete_cost, replace_cost)
 
     # if the last entry in the row indicates the optimal cost is less than the
     # maximum cost, and there is a word in this trie node, then add it.
@@ -55,7 +59,7 @@ def search_recursive(node, letter, word, previous_row, results, max_cost):
 
     # if any entries in the row are less than the maximum cost, then 
     # recursively search each branch of the trie
-    if min(current_row ) <= max_cost:
+    if min(current_row) <= max_cost:
         for letter in node.children:
             search_recursive(node.children[letter], letter, word, current_row, 
                 results, max_cost)
