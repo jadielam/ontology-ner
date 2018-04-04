@@ -73,7 +73,7 @@ def train(conf):
     if max_iterations is not None and max_iterations > 0:
         trainer.set_params({'max_iterations': max_iterations,
                             'c1': 1.0,
-                            'c2': 1e-4,
+                            'c2': 1.0,
                             'feature.minfreq': 1,
                             'feature.possible_states': True,
                             'feature.possible_transitions': False })
