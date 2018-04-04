@@ -21,49 +21,51 @@ class TrieNode:
 
 def search(trie, word, max_cost):
     # build first row
-    current_row = range(len(word) + 1)
+    current_row = array('i', range(len(word) + 1))
 
     results = []
-
+    
     for letter in trie.children:
-        search_recursive(trie.children[letter], letter, word, current_row, 
-            results, max_cost)
+        stack = [(trie.children[letter], letter, word, current_row, results)]    
+        search_stack(stack, max_cost)
     return results
 
-def search_recursive(node, letter, word, previous_row, results, max_cost):
+def search_stack(stack, max_cost):
     '''
     Searches recursively for the word in the trie.
     '''
-    columns = len(word) + 1
-    current_row = array('i', [0]*(len(word) + 1))
-    current_row[0] = previous_row[0] + 1
+    
+    while stack:
+        node, letter, word, previous_row, results = stack.pop()
+        columns = len(word) + 1
+        current_row = array('i', [0]*(len(word) + 1))
+        current_row[0] = previous_row[0] + 1
 
-    # Build one row for the letter, with a column for each letter in the target
-    # word, plus one for the empty string at column 0
-    for column in range(1, columns):
+        # Build one row for the letter, with a column for each letter in the target
+        # word, plus one for the empty string at column 0
+        for column in range(1, columns):
 
-        insert_cost = current_row[column - 1] + 1
-        delete_cost = previous_row[column] + 1
+            insert_cost = current_row[column - 1] + 1
+            delete_cost = previous_row[column] + 1
 
-        if word[column - 1] != letter:
-            replace_cost = previous_row[column - 1] + 1
-        else:                
-            replace_cost = previous_row[column - 1]
+            if word[column - 1] != letter:
+                replace_cost = previous_row[column - 1] + 1
+            else:                
+                replace_cost = previous_row[column - 1]
 
-        current_row[column] = min(insert_cost, delete_cost, replace_cost)
+            current_row[column] = min(insert_cost, delete_cost, replace_cost)
 
-    # if the last entry in the row indicates the optimal cost is less than the
-    # maximum cost, and there is a word in this trie node, then add it.
-    if current_row[-1] <= max_cost and node.word != None:
-        results.append((node.word, current_row[-1]))
+        # if the last entry in the row indicates the optimal cost is less than the
+        # maximum cost, and there is a word in this trie node, then add it.
+        if current_row[-1] <= max_cost and node.word != None:
+            results.append((node.word, current_row[-1]))
 
-    # if any entries in the row are less than the maximum cost, then 
-    # recursively search each branch of the trie
-    if min(current_row) <= max_cost:
-        for letter in node.children:
-            search_recursive(node.children[letter], letter, word, current_row, 
-                results, max_cost)
-
+        # if any entries in the row are less than the maximum cost, then 
+        # recursively search each branch of the trie
+        if min(current_row) <= max_cost:
+            for letter in node.children:
+                stack.append((node.children[letter], letter, word, current_row, results))
+                
 class Gazetteer(object):
     """Class encapsulating a Gazetteer.
     A Gazetteer contains a set of words that are names (e.g. names of people)."""
