@@ -492,7 +492,7 @@ class GazetteerMinimumDistanceNGram(object):
                 minimum_distance = self.g.minimum_distance_to_synonym(phrase)
                 self.cache.set(phrase, minimum_distance)
             result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % minimum_distance])
-        for _ in range(len(ngrams), window.tokens):
+        for _ in range(len(ngrams), len(window.tokens)):
             result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % 1.0])
         return result
 
