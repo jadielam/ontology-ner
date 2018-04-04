@@ -6,6 +6,7 @@ A Gazetteer contains a set of words that are names (e.g. names of people)."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 from array import array
 
+    
 class TrieNode:
     def __init__(self):
         self.word = None

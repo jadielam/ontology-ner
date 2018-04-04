@@ -7,6 +7,33 @@ Contains:
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
+from collections import OrderedDict
+
+class Cache:
+    '''
+    In process memory cache. Not thread safe
+    '''
+    def __init__(self, max_size = 100000):
+        self._store = OrderedDict()
+        self._max_size = max_size
+
+    def set(self, key, value):
+        self._check_limit()
+        self._store[key] = value
+    
+    def get(self, key, default = None):
+        data = self._store.get(key)
+        if not data:
+            return default
+        return data
+    
+    def _check_limit(self):
+        if len(self._store) >= self._max_size:
+            self._store.popitem(last = False)
+    
+    def clear(self):
+        self._store = OrderedDict()
+
 
 from pyner.features.brown import BrownClusters
 from pyner.features.gazetteer import Gazetteer
@@ -380,21 +407,33 @@ class GazetteerSynonym(object):
 class GazetteerClosestToken(object):
     def __init__(self, gazetteer):
         self.g = gazetteer
+        self.cache = Cache()
+
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            closest_token = self.g.closest_token(token.word)
+            closest_token = self.cache.get(token.word, None)
+            if closest_token is None:
+                closest_token = self.g.closest_token(token.word)
+                self.cache.set(token.word, closest_token)
             result.append(["g_closest_{}=%s".format(self.g.type) % closest_token])
         return result
 
 class GazetteerTokenPosition(object):
     def __init__(self, gazetteer):
         self.g = gazetteer
+        self.cache = Cache()
+    
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            closest_token = self.g.closest_token(token.word)
-            result.append(["g_token_position_{}=%d".format(self.g.type) % self.g.token_position_in_name(closest_token)])
+            token_position = self.cache.get(token.word, None)
+            if token_position is None:
+                closest_token = self.g.closest_token(token.word)
+                token_position = self.g.token_position_in_name(closest_token)
+                self.cache.set(token.word, token_position)
+
+            result.append(["g_token_position_{}=%d".format(self.g.type) % token_position])
         return result
     
 
@@ -422,11 +461,16 @@ class GazetteerMinimumDistanceSynonym(object):
 class GazetteerMinimumDistanceToken(object):
     def __init__(self, gazetteer):
         self.g = gazetteer
+        self.cache = Cache()
     
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_token_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_token(token.word)])
+            minimum_distance = self.cache.get(token.word, None)
+            if minimum_distance is None:
+                minimum_distance = self.g.minimum_distance_to_token(token.word)
+                self.cache.set(token.word, minimum_distance)
+            result.append(["g_token_distance_{}=%f".format(self.g.type) % minimum_distance])
             
         return result
 
