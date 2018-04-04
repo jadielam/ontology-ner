@@ -118,14 +118,14 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
     #] + [
     #    GazetteerMinimumDistanceSynonym(gaz) for gaz in gazetteers
     #] + [
-    #    GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
-    #] + [
+        GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
+    ] + [
         GazetteerClosestToken(gaz) for gaz in gazetteers
-    ]# + [
-    #    GazetteerTokenPosition(gaz) for gaz in gazetteers
-    #] #+ [
-       # GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
     #] + [
+    #    GazetteerTokenPosition(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
+    ]# + [
     #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
