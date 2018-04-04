@@ -470,7 +470,7 @@ class GazetteerMinimumDistanceToken(object):
                 minimum_distance = self.g.minimum_distance_to_token(token.word)
                 self.cache.set(token.word, minimum_distance)
             result.append(["g_token_distance_{}=%f".format(self.g.type) % minimum_distance])
-            
+        
         return result
 
 class GazetteerMinimumDistanceNGram(object):
@@ -492,6 +492,8 @@ class GazetteerMinimumDistanceNGram(object):
                 minimum_distance = self.g.minimum_distance_to_synonym(phrase)
                 self.cache.set(phrase, minimum_distance)
             result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % minimum_distance])
+        for _ in range(len(ngrams), window.tokens):
+            result.append(["g_{}gram_{}_distance=%f".format(self.ngram, self.g.type) % 1.0])
         return result
 
 class WordPatternFeature(object):
