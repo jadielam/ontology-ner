@@ -120,9 +120,9 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         GazetteerClosestToken(gaz) for gaz in gazetteers
     ] + [
         GazetteerTokenPosition(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
     ] #+ [
+       # GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
+    #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
@@ -159,7 +159,7 @@ class WordFeature(object):
         for token in window.tokens:
             result.append(["word_feature=%s" % token.word])
         return result
-    
+
 class TokenLengthFeature(object):
     """Generates a feature that describes the character length of a token."""
     def __init__(self, max_length=30):
