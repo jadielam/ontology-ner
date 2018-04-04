@@ -35,6 +35,7 @@ def train(conf):
     lda_cache_filepath = conf.get('lda_cache_filepath', None)
     articles_filepath = conf.get('articles_filepath')
     window_size = conf['window_size']
+    model_output_path = conf['model_output_path']
     count_windows_train = conf['count_windows_train']
     count_windows_test = conf['count_windows_test']
     skip_chain_left = conf['skip_chain_left']
@@ -77,7 +78,7 @@ def train(conf):
                             'feature.minfreq': 1,
                             'feature.possible_states': True,
                             'feature.possible_transitions': False })
-    trainer.train("train", holdout = 1)                    
+    trainer.train(model_output_path, holdout = 1)                  
 
 if __name__ == "__main__":
     main()

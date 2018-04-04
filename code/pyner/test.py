@@ -29,12 +29,13 @@ def main():
     lda_model_filepath = conf.get('lda_model_filepath', None)
     lda_dictionary_filepath = conf.get('lda_dictionary_filepath', None)
     lda_cache_filepath = conf.get('lda_cache_filepath', None)
+    model_output_path = conf['model_output_path']
     skip_chain_left = conf['skip_chain_left']
     skip_chain_right = conf['skip_chain_right']
 
     print("Creating tagger... ")
     tagger = pycrfsuite.Tagger()
-    tagger.open("train")
+    tagger.open(model_output_path)
 
     print("Creating feature extractors... ")
     feature_generators = features.create_features(gaz_filepaths, brown_clusters_filepath,
