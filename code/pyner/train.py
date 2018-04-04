@@ -74,9 +74,9 @@ def train(conf):
         trainer.set_params({'max_iterations': max_iterations,
                             'c1': 1.0,
                             'c2': 1e-4,
-                            'feature.minfreq': 0,
+                            'feature.minfreq': 1,
                             'feature.possible_states': True,
-                            'feature.possible_transitions': True })
+                            'feature.possible_transitions': False })
     trainer.train("train", holdout = 1)                    
 
 if __name__ == "__main__":
