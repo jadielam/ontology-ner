@@ -14,15 +14,7 @@ from pyner.features.gazetteer import Gazetteer
 
 random.seed(42)
 
-def transcribe_text(original_text, output_tags, gaz, tags_to_gaz_type_d):
-    original_tokens = original_text.split()
-    return original_text
-
-
-def main():
-    with open(sys.argv[1]) as f:
-        conf = json.load(f)
-    
+def tag_sentence_factory(conf):
     gaz_filepaths = conf.get('gaz_filepaths', None)
     brown_clusters_filepath = conf.get('brown_clusters_filepath', None)
     w2v_clusters_filepath = conf.get('w2v_clusters_filepath', None)
@@ -50,27 +42,9 @@ def main():
         gaz = Gazetteer(gaz_filepath, type = gaz_type)
         gaz_d[gaz_type] = gaz 
 
-    tag_to_gaz_type_d = {
-        'B-CHAR': 'characters',
-        'I-CHAR': 'characters',
-        'B-PARK': 'parks',
-        'I-PARK': 'parks',
-        'B-ATTR': 'attractions',
-        'I-ATTR': 'attractions',
-        'B-REST': 'restaurants',
-        'I-REST': 'restaurants',
-        'B-ENTE': 'entertainment',
-        'I-ENTE': 'entertainment',
-        'B-RESO': 'resorts',
-        'I-RESO': 'resorts'
-    } 
-
-    while True:
-        query_text = raw_input("Your text: ")
-        if query_text == "exit":
-            break
-        query_text = query_text.lower()
-        article = Article(query_text)
+    def tag_sentence(sentence_text):
+        sentence_text = sentence_text.lower()
+        article = Article(sentence_text)
         window = Window(article.tokens)
         window.apply_features(feature_generators)
 
@@ -79,9 +53,22 @@ def main():
             fvl = window.get_feature_values_list(word_idx, skip_chain_left, skip_chain_right)
             feature_values_lists.append(fvl)
         tagged_sequence = tagger.tag(feature_values_lists)
+        return tagged_sequence
+
+    return tag_sentence
+
+def main():
+    with open(sys.argv[1]) as f:
+        conf = json.load(f)
+    
+    tag_sentence = tag_sentence_factory(conf)
+
+    while True:
+        query_text = raw_input("Your text: ")
+        if query_text == "exit":
+            break
+        tagged_sequence = tag_sentence(query_text)
         print("Tagged: {}".format(tagged_sequence))
-        transcribed_sentence = transcribe_text(query_text, tagged_sequence, gaz_d, tag_to_gaz_type_d)
-        print("Transcribed: {}".format(transcribed_sentence))
 
 if __name__ == "__main__":
     main()
