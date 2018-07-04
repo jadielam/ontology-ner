@@ -1,0 +1,11 @@
+{
+    "articles_filepath": "/path/to/training/data",
+    "window_size": 50,
+    "model_output_path": "/path/to/model/output/file",
+    "count_windows_train": 10000,
+    "count_windows_test": 300,
+    "skip_chain_left": 5,
+    "skip_chain_right": 5,
+    "max_iterations": 10000,
+    "ner_tags": ["BOOK", "PERSON", "PLACE", "ABBV", "REF_NUMBER", "B_PERSON", "CITY", "DEMONYM", "LAKE", "SEA", "ISLAND", "MOUNTAIN", "NATION", "OTHER_PLACE", "P_PERSON", "MEASUREMENT", "TOPIC", "RIVER", "GOD"]
+}

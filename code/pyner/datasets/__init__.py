@@ -19,7 +19,7 @@ def split_to_chunks(of_list, chunk_size):
     for i in range(0, len(of_list), chunk_size):
         yield of_list[i:i + chunk_size]
 
-def load_articles(filepath, start_at=0):
+def load_articles(filepath, ner_tags, start_at=0):
     """Loads all articles (documents) from a corpus.
     The corpus is expected to be a UTF-8 encoded textfile with one article/document per line.
     Args:
@@ -37,7 +37,7 @@ def load_articles(filepath, start_at=0):
                 if skipped < start_at:
                     skipped += 1
                 else:
-                    yield Article(article)
+                    yield Article(article, labels = ner_tags)
 
 def load_windows(articles, window_size, features=None, every_nth_window=1,
                  only_labeled_windows=False):
@@ -149,7 +149,7 @@ def generate_examples(windows, skip_chain_left, skip_chain_right, nb_append=None
 class Article(object):
     """Class modelling an article/document from the corpus. It's mostly a wrapper around a list
     of Token objects."""
-    def __init__(self, text, no_ne_label = 'O'):
+    def __init__(self, text, labels, no_ne_label = 'O'):
         """Initialize a new Article object.
         Args:
             text: The string content of the article/document.
@@ -160,7 +160,7 @@ class Article(object):
         # token sequences
         text = re.sub(r"[\t\s]+", " ", text, flags=re.UNICODE)
         tokens_str = [token_str.strip() for token_str in text.strip().split(" ")]
-        self.tokens = [Token(token_str) for token_str in tokens_str if len(token_str) > 0]
+        self.tokens = [Token(token_str, labels = labels) for token_str in tokens_str if len(token_str) > 0]
         self.no_ne_label = no_ne_label
 
     def get_content_as_string(self):
@@ -288,6 +288,9 @@ class Token(object):
             for label in labels:
                 encoded_labels.append("B-" + label)
                 encoded_labels.append("I-" + label)
+        else:
+            encoded_labels = labels
+
         self.original = original
         self.word = original
         self.label = no_ne_label

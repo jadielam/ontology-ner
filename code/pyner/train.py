@@ -11,7 +11,6 @@ import json
 import itertools
 import pycrfsuite
 
-
 from pyner.datasets import load_windows, load_articles, generate_examples
 import pyner.features.features as features
 
@@ -42,6 +41,7 @@ def train(conf):
     skip_chain_right = conf['skip_chain_right']
     max_iterations = conf.get('max_iterations', None)
     features_to_extract = conf.get('features_to_extract', None)
+    ner_tags = conf.get('ner_tags', [])
 
     print("Creating trainer... ")
     trainer = pycrfsuite.Trainer(verbose = True)
