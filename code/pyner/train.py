@@ -55,7 +55,7 @@ def train(conf):
                                     features_to_extract = features_to_extract)
 
     print("Loading articles... ")
-    articles = load_articles(articles_filepath)
+    articles = load_articles(articles_filepath, ner_tags)
 
     print("Loading windows... ")
     windows = load_windows(articles, window_size,
