@@ -45,7 +45,7 @@ def train(conf):
     ner_tags = conf.get('ner_tags', None)
     
     if ner_tags is not None:
-        pyner.datasets.labels = ner_tags
+        pyner.datasets.ner_tags = ner_tags
     
     print("Creating trainer... ")
     trainer = pycrfsuite.Trainer(verbose = True)
