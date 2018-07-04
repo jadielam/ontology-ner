@@ -6,6 +6,8 @@ import re
 from collections import Counter
 import sys
 
+ner_tags = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE', 'RESO', 'PLAC']
+
 def split_to_chunks(of_list, chunk_size):
     """Splits a list to smaller chunks.
     Args:
@@ -19,7 +21,7 @@ def split_to_chunks(of_list, chunk_size):
     for i in range(0, len(of_list), chunk_size):
         yield of_list[i:i + chunk_size]
 
-def load_articles(filepath, ner_tags, start_at=0):
+def load_articles(filepath, start_at=0):
     """Loads all articles (documents) from a corpus.
     The corpus is expected to be a UTF-8 encoded textfile with one article/document per line.
     Args:
@@ -31,13 +33,14 @@ def load_articles(filepath, ner_tags, start_at=0):
     skipped = 0
     with open(filepath, "r") as handle:
         for article in handle:
-            article = article.decode("utf-8").strip()
+            #article = article.decode("utf-8").strip()
+            article = article.strip()
 
             if len(article) > 0:
                 if skipped < start_at:
                     skipped += 1
                 else:
-                    yield Article(article, labels = ner_tags)
+                    yield Article(article)
 
 def load_windows(articles, window_size, features=None, every_nth_window=1,
                  only_labeled_windows=False):
@@ -149,7 +152,7 @@ def generate_examples(windows, skip_chain_left, skip_chain_right, nb_append=None
 class Article(object):
     """Class modelling an article/document from the corpus. It's mostly a wrapper around a list
     of Token objects."""
-    def __init__(self, text, labels, no_ne_label = 'O'):
+    def __init__(self, text, no_ne_label = 'O'):
         """Initialize a new Article object.
         Args:
             text: The string content of the article/document.
@@ -160,7 +163,7 @@ class Article(object):
         # token sequences
         text = re.sub(r"[\t\s]+", " ", text, flags=re.UNICODE)
         tokens_str = [token_str.strip() for token_str in text.strip().split(" ")]
-        self.tokens = [Token(token_str, labels = labels) for token_str in tokens_str if len(token_str) > 0]
+        self.tokens = [Token(token_str) for token_str in tokens_str if len(token_str) > 0]
         self.no_ne_label = no_ne_label
 
     def get_content_as_string(self):
@@ -277,7 +280,7 @@ class Token(object):
             (See Window.apply_features().)
     """
     def __init__(self, original, no_ne_label = 'O', 
-                remove_bio_encoding = False, labels = ['PARK', 'CHAR', 'ATTR', 'REST', 'ENTE', 'RESO', 'PLAC']):
+                remove_bio_encoding = False):
         """Initialize a new Token object.
         Args:
             original: The original word as found in the text document, including the label,
@@ -285,11 +288,11 @@ class Token(object):
         """
         encoded_labels = []
         if not remove_bio_encoding:
-            for label in labels:
+            for label in ner_tags:
                 encoded_labels.append("B-" + label)
                 encoded_labels.append("I-" + label)
         else:
-            encoded_labels = labels
+            encoded_labels = ner_tags
 
         self.original = original
         self.word = original

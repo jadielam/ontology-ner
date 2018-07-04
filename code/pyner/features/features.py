@@ -494,7 +494,7 @@ class GazetteerMinimumDistanceNGram(object):
         self.cache = Cache()
     
     def _find_ngrams(self, input_list, ngram):
-        return zip(*[input_list[i:] for i in range(ngram)])
+        return list(zip(*[input_list[i:] for i in range(ngram)]))
 
     def convert_window(self, window):
         result = []
