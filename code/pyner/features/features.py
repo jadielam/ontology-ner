@@ -110,9 +110,9 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         WordFeature(),
         #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
     ] + [
-      #  GazetteerOfficialName(gaz) for gaz in gazetteers
-    #] + [
-    #    GazetteerSynonym(gaz) for gaz in gazetteers
+        GazetteerOfficialName(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerSynonym(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
     #] + [
@@ -121,8 +121,8 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
     #    GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerClosestToken(gaz) for gaz in gazetteers
-    #] + [
-    #    GazetteerTokenPosition(gaz) for gaz in gazetteers
+    ] + [
+        GazetteerTokenPosition(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
     ] # + [
