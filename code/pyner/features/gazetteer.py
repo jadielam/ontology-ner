@@ -66,7 +66,92 @@ def search_stack(stack, max_cost):
         if min(current_row) <= max_cost:
             for letter in node.children:
                 stack.append((node.children[letter], letter, word, current_row, results))
-                
+
+class AllGazetteer(object):
+    def __init__(self, file_paths, types):
+        self._token_types = dict()
+        self._entry_types = dict()
+        self._entries_trie = TrieNode()
+        self._tokens_trie = TrieNode()
+
+        self._fill_gazetteer(file_paths, types)
+        
+    def fill_gazetteer(self, file_paths, types):
+        """Fills the gazetteer from a list of entries provided in a 
+        text file.  Each line in the file corresponds to an entity. 
+        Each line in the file is a list of comma separated values
+        The first entry in the list is the original nam
+        Args:
+            file_path: 
+        """
+
+        for e_type, file_path in zip(types, file_paths):
+            with open(file_path, "r") as f:
+                for line in f:
+                    lower_line = line.lower()
+                    entries = lower_line.split(",")
+                    entries = [a.strip() for a in entries]
+
+                    if len(entries) > 0:
+                        for idx, entry in enumerate(entries):
+                            # 1. Enter entry into trie and types
+                            if not entry in self._entry_types:
+                                self._entry_types[entry] = []
+                            self._entry_types[entry].append(e_type)
+                            self._entries_trie.insert(entry)
+
+                            #2. Enter tokens into type and trie
+                            tokens = entry.split()
+                            for idx, token in enumerate(tokens):
+                                if not token in self._token_types:
+                                    self._token_types[token] = []
+                                self._token_types.append(type)
+                                self._tokens_trie.insert(token)
+    
+    def minimum_distance_to_token(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self._tokens_trie, phrase.lower(), max_distance)
+
+        if len(results) > 0:
+            return results[0][1] / float(len(phrase))
+        else:
+            return 1.0
+    
+    def minimum_distance_to_entry(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self._entries_trie, phrase.lower(), max_distance)
+
+        if len(results) > 0:
+            return results[0][1] / float(len(phrase))
+        else:
+            return 1.0
+    
+    def closest_entry_types(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self._entries_trie, phrase.lower(), max_distance)
+        if len(results) > 0:
+            entry = results[0][0]
+            if entry in self._entry_types:
+                types = self._entry_types[entry]
+                return "_".join(types)
+        
+        return "NONE"
+    
+    def closes_token_types(self, phrase):
+        distance_percentage = 0.30
+        max_distance = max(1, int(len(phrase) * distance_percentage))
+        results = search(self._tokens_trie, phrase.lower(), max_distance)
+        if len(results) > 0:
+            token = results[0][0]
+            if token in self._token_types:
+                types = self._token_types[entry]
+                return "_".join(types)
+        
+        return "NONE"
+
 class Gazetteer(object):
     """Class encapsulating a Gazetteer.
     A Gazetteer contains a set of words that are names (e.g. names of people)."""
