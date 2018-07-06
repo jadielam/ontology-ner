@@ -68,15 +68,15 @@ def search_stack(stack, max_cost):
                 stack.append((node.children[letter], letter, word, current_row, results))
 
 class AllGazetteer(object):
-    def __init__(self, file_paths, types):
+    def __init__(self, type_filepath_dict):
         self._token_types = dict()
         self._entry_types = dict()
         self._entries_trie = TrieNode()
         self._tokens_trie = TrieNode()
 
-        self._fill_gazetteer(file_paths, types)
+        self.fill_gazetteer(type_filepath_dict)
         
-    def fill_gazetteer(self, file_paths, types):
+    def fill_gazetteer(self, type_filepath_dict):
         """Fills the gazetteer from a list of entries provided in a 
         text file.  Each line in the file corresponds to an entity. 
         Each line in the file is a list of comma separated values
@@ -85,7 +85,7 @@ class AllGazetteer(object):
             file_path: 
         """
 
-        for e_type, file_path in zip(types, file_paths):
+        for e_type, file_path in type_filepath_dict.items():
             with open(file_path, "r") as f:
                 for line in f:
                     lower_line = line.lower()
@@ -105,7 +105,7 @@ class AllGazetteer(object):
                             for idx, token in enumerate(tokens):
                                 if not token in self._token_types:
                                     self._token_types[token] = []
-                                self._token_types.append(type)
+                                self._token_types[token].append(e_type)
                                 self._tokens_trie.insert(token)
     
     def minimum_distance_to_token(self, phrase):
@@ -140,14 +140,14 @@ class AllGazetteer(object):
         
         return "NONE"
     
-    def closes_token_types(self, phrase):
+    def closest_token_types(self, phrase):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self._tokens_trie, phrase.lower(), max_distance)
         if len(results) > 0:
             token = results[0][0]
             if token in self._token_types:
-                types = self._token_types[entry]
+                types = self._token_types[token]
                 return "_".join(types)
         
         return "NONE"

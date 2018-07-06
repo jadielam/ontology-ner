@@ -39,7 +39,7 @@ class Cache:
 
 
 from pyner.features.brown import BrownClusters
-from pyner.features.gazetteer import Gazetteer
+from pyner.features.gazetteer import Gazetteer, AllGazetteer
 from pyner.features.lda import LdaWrapper
 from pyner.features.pos import PosTagger
 from pyner.features.w2v import W2VClusters
@@ -74,6 +74,8 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
     for gaz_type, gaz_filepath in gazetteers_data.items():
         gaz = Gazetteer(gaz_filepath, type = gaz_type)
         gazetteers.append(gaz)
+    
+    allgazetteer = AllGazetteer(gazetteers_data)
 
     # Load the mapping of word to brown cluster and word to brown cluster bitchain
     #print_if_verbose("Loading brown clusters...")
@@ -108,11 +110,17 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
         SuffixFeature(),
         POSTagFeature(pos),
         WordFeature(),
-        #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size)
-    ] + [
-        GazetteerOfficialName(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerSynonym(gaz) for gaz in gazetteers
+        #LDATopicFeature(lda, lda_window_left_size, lda_window_right_size),
+        AllGazetteerMinimumDistanceToken(allgazetteer),
+        #AllGazetteerMinimumDistanceEntry(allgazetteer),
+        #AllGazetteerClosestEntryType(allgazetteer),
+        #AllGazetteerClosestTypeNGram(allgazetteer, 2),
+        #AllGazetteerMinimumDistanceNGram(allgazetteer, 2),
+        AllGazetteerClosestTokenType(allgazetteer)
+    ]# + [
+    #    GazetteerOfficialName(gaz) for gaz in gazetteers
+    # ] + [
+    #    GazetteerSynonym(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceOfficialName(gaz) for gaz in gazetteers
     #] + [
@@ -121,11 +129,11 @@ def create_features(gazetteers_data, brown_clusters_filepath, w2v_clusters_filep
     #    GazetteerMinimumDistanceToken(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerClosestToken(gaz) for gaz in gazetteers
-    ] + [
-        GazetteerTokenPosition(gaz) for gaz in gazetteers
+    #] + [
+    #    GazetteerTokenPosition(gaz) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 2) for gaz in gazetteers
-    ] # + [
+    #] # + [
     #    GazetteerMinimumDistanceNGram(gaz, 3) for gaz in gazetteers
     #] + [
     #    GazetteerMinimumDistanceNGram(gaz, 4) for gaz in gazetteers
@@ -414,6 +422,112 @@ class GazetteerSynonym(object):
         result = []
         for token in window.tokens:
             result.append(["g_synonym_{}=%d".format(self.g.type) % (int(self.g.contains_as_synonym(token.word)))])
+        return result
+
+class AllGazetteerMinimumDistanceToken(object):
+    def __init__(self, gazetteer):
+        self._g = gazetteer
+        self._cache = Cache()
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            minimum_distance = self._cache.get(token.word, None)
+            if minimum_distance is None:
+                minimum_distance = self._g.minimum_distance_to_token(token.word)
+                self._cache.set(token.word, minimum_distance)
+            result.append(["g_minimum_distance_token=%d" % minimum_distance])
+        return result
+
+class AllGazetteerMinimumDistanceEntry(object):
+    def __init__(self, gazetteer):
+        self._g = gazetteer
+        self._cache = Cache()
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            minimum_distance = self._cache.get(token.word, None)
+            if minimum_distance is None:
+                minimum_distance = self._g.minimum_distance_to_entry(token.word)
+                self._cache.set(token.word, minimum_distance)
+            result.append(["g_minimum_distance_entry=%d" % minimum_distance])
+        return result
+
+class AllGazetteerClosestEntryType(object):
+    def __init__(self, gazetteer):
+        self._g = gazetteer
+        self._cache = Cache()
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            types = self._cache.get(token.word, None)
+            if types is None:
+                types = self._g.closest_entry_types(token.word)
+                self._cache.set(token.word, types)
+            result.append(["g_types_entry=%s" % types])
+        return result
+
+class AllGazetteerClosestTokenType(object):
+    def __init__(self, gazetteer):
+        self._g = gazetteer
+        self._cache = Cache()
+    
+    def convert_window(self, window):
+        result = []
+        for token in window.tokens:
+            types = self._cache.get(token.word, None)
+            if types is None:
+                types = self._g.closest_token_types(token.word)
+                self._cache.set(token.word, types)
+            result.append(["g_types_token=%s" % types])
+        return result
+
+class AllGazetteerClosestTypeNGram(object):
+    def __init__(self, g, ngram):
+        self._g = g
+        self._ngram = ngram
+        self._cache = Cache()
+    
+    def _find_ngrams(self, input_list, ngram):
+        return list(zip(*[input_list[i:] for i in range(ngram)]))
+
+    def convert_window(self, window):
+        result = []
+        ngrams = self._find_ngrams(window.tokens, self._ngram)
+        for token_ngram in ngrams:
+            phrase = " ".join([token.word for token in token_ngram])
+            closest_types = self._cache.get(phrase, None)
+            if closest_types is None:
+                closest_types = self._g.closest_entry_types(phrase)
+                self._cache.set(phrase, closest_types)
+            result.append(["g_{}gram_types=%s".format(self._ngram) % closest_types])
+        for _ in range(len(ngrams), len(window.tokens)):
+            result.append(["g_{}gram_types=%s".format(self._ngram) % "NONE"])
+        return result
+
+class AllGazetteerMinimumDistanceNGram(object):
+    def __init__(self, g, ngram):
+        self._g = g
+        self._ngram = ngram
+        self._cache = Cache()
+    
+    def _find_ngrams(self, input_list, ngram):
+        return list(zip(*[input_list[i:] for i in range(ngram)]))
+    
+    def convert_window(self, window):
+        result = []
+        ngrams = self._find_ngrams(window.tokens, self._ngram)
+        for token_ngram in ngrams:
+            phrase = " ".join([token.word for token in token_ngram])
+            minimum_distance = self._cache.get(phrase, None)
+            if minimum_distance is None:
+                minimum_distance = self._g.minimum_distance_to_entry(phrase)
+                self._cache.set(phrase, minimum_distance)
+            result.append(["g_{}gram_distance=%d".format(self._ngram) % minimum_distance])
+        for _ in range(len(ngrams), len(window.tokens)):
+            result.append(["g_{}gram_distance=%d".format(self._ngram) % 1.0])
         return result
 
 class GazetteerClosestToken(object):
