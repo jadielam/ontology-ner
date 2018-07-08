@@ -435,6 +435,7 @@ class AllGazetteerMinimumDistanceToken(object):
             minimum_distance = self._cache.get(token.word, None)
             if minimum_distance is None:
                 minimum_distance = self._g.minimum_distance_to_token(token.word)
+                minimum_distance = bucketize_minimum_distance(minimum_distance)
                 self._cache.set(token.word, minimum_distance)
             result.append(["g_minimum_distance_token=%d" % minimum_distance])
         return result
@@ -450,6 +451,7 @@ class AllGazetteerMinimumDistanceEntry(object):
             minimum_distance = self._cache.get(token.word, None)
             if minimum_distance is None:
                 minimum_distance = self._g.minimum_distance_to_entry(token.word)
+                minimum_distance = bucketize_minimum_distance(minimum_distance)
                 self._cache.set(token.word, minimum_distance)
             result.append(["g_minimum_distance_entry=%d" % minimum_distance])
         return result
@@ -524,6 +526,7 @@ class AllGazetteerMinimumDistanceNGram(object):
             minimum_distance = self._cache.get(phrase, None)
             if minimum_distance is None:
                 minimum_distance = self._g.minimum_distance_to_entry(phrase)
+                minimum_distance = bucketize_minimum_distance(minimum_distance)
                 self._cache.set(phrase, minimum_distance)
             result.append(["g_{}gram_distance=%d".format(self._ngram) % minimum_distance])
         for _ in range(len(ngrams), len(window.tokens)):
@@ -570,7 +573,7 @@ class GazetteerMinimumDistanceOfficialName(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_official_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_official_name(token.word)])
+            result.append(["g_official_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_official_name(token.word)])
         return result
 
 class GazetteerMinimumDistanceSynonym(object):
@@ -580,7 +583,7 @@ class GazetteerMinimumDistanceSynonym(object):
     def convert_window(self, window):
         result = []
         for token in window.tokens:
-            result.append(["g_synonym_distance_{}=%d".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
+            result.append(["g_synonym_distance_{}=%f".format(self.g.type) % self.g.minimum_distance_to_synonym(token.word)])
             
         return result
 

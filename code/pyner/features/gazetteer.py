@@ -5,7 +5,7 @@ A Gazetteer contains a set of words that are names (e.g. names of people)."""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 from array import array
-
+import operator
     
 class TrieNode:
     def __init__(self):
@@ -45,7 +45,6 @@ def search_stack(stack, max_cost):
         # Build one row for the letter, with a column for each letter in the target
         # word, plus one for the empty string at column 0
         for column in range(1, columns):
-
             insert_cost = current_row[column - 1] + 1
             delete_cost = previous_row[column] + 1
 
@@ -97,24 +96,26 @@ class AllGazetteer(object):
                             # 1. Enter entry into trie and types
                             if not entry in self._entry_types:
                                 self._entry_types[entry] = []
+                                self._entries_trie.insert(entry)
                             self._entry_types[entry].append(e_type)
-                            self._entries_trie.insert(entry)
-
+                            
                             #2. Enter tokens into type and trie
                             tokens = entry.split()
                             for idx, token in enumerate(tokens):
                                 if not token in self._token_types:
                                     self._token_types[token] = []
+                                    self._tokens_trie.insert(token)
                                 self._token_types[token].append(e_type)
-                                self._tokens_trie.insert(token)
+                                
     
     def minimum_distance_to_token(self, phrase):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self._tokens_trie, phrase.lower(), max_distance)
-
+        
         if len(results) > 0:
-            return results[0][1] / float(len(phrase))
+            minimum_value = min(results, key = operator.itemgetter(1))[1]
+            return minimum_value / float(len(phrase))
         else:
             return 1.0
     
@@ -122,9 +123,10 @@ class AllGazetteer(object):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self._entries_trie, phrase.lower(), max_distance)
-
+        
         if len(results) > 0:
-            return results[0][1] / float(len(phrase))
+            minimum_value = min(results, key = operator.itemgetter(1))[1]
+            return minimum_value / float(len(phrase))
         else:
             return 1.0
     
@@ -132,8 +134,9 @@ class AllGazetteer(object):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self._entries_trie, phrase.lower(), max_distance)
+        
         if len(results) > 0:
-            entry = results[0][0]
+            entry = min(results, key = operator.itemgetter(1))[0]
             if entry in self._entry_types:
                 types = self._entry_types[entry]
                 return "_".join(types)
@@ -144,8 +147,9 @@ class AllGazetteer(object):
         distance_percentage = 0.30
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self._tokens_trie, phrase.lower(), max_distance)
+
         if len(results) > 0:
-            token = results[0][0]
+            token = min(results, key = operator.itemgetter(1))[0]
             if token in self._token_types:
                 types = self._token_types[token]
                 return "_".join(types)
@@ -225,7 +229,8 @@ class Gazetteer(object):
         results = search(self.tokens_trie, phrase.lower(), max_distance)
 
         if len(results) > 0:
-            return results[0][1] / float(len(phrase))
+            minimum_value = min(results, key = operator.itemgetter(1))[1]
+            return minimum_value / float(len(phrase))
         else:
             return 1.0
     
@@ -239,7 +244,8 @@ class Gazetteer(object):
         results = search(self.official_names_trie, phrase.lower(), max_distance)
 
         if len(results) > 0:
-            return results[0][1] / float(len(phrase))
+            minimum_value = min(results, key = operator.itemgetter(1))[1]
+            return minimum_value / float(len(phrase))
         else:
             return 1.0
     
@@ -248,7 +254,8 @@ class Gazetteer(object):
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self.synonyms_trie, phrase.lower(), max_distance)
         if len(results) > 0:
-            return self.synonyms_to_official_name[results[0][0]]
+            entry = min(results, key = operator.itemgetter(1))[0]
+            return self.synonyms_to_official_name[entry]
         else:
             return "NONE"
 
@@ -258,7 +265,8 @@ class Gazetteer(object):
         results = search(self.tokens_trie, phrase.lower(), max_distance)
 
         if len(results) > 0:
-            return results[0][0]
+            entry = min(results, key = operator.itemgetter(1))[0]
+            return entry
         else:
             "None"
     
@@ -276,6 +284,7 @@ class Gazetteer(object):
         max_distance = max(1, int(len(phrase) * distance_percentage))
         results = search(self.synonyms_trie, phrase.lower(), max_distance)
         if len(results) > 0:
-            return results[0][1] / float(len(phrase))
+            minimum_distance = min(results, key = operator.itemgetter(1))[1]
+            return minimum_distance / float(len(phrase))
         else:
             return 1.0
