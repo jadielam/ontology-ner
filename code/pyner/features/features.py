@@ -435,9 +435,9 @@ class AllGazetteerMinimumDistanceToken(object):
             minimum_distance = self._cache.get(token.word, None)
             if minimum_distance is None:
                 minimum_distance = self._g.minimum_distance_to_token(token.word)
-                minimum_distance = bucketize_minimum_distance(minimum_distance)
+                #minimum_distance = bucketize_minimum_distance(minimum_distance)
                 self._cache.set(token.word, minimum_distance)
-            result.append(["g_minimum_distance_token=%d" % minimum_distance])
+            result.append(["g_minimum_distance_token=%f" % minimum_distance])
         return result
 
 class AllGazetteerMinimumDistanceEntry(object):
@@ -451,9 +451,9 @@ class AllGazetteerMinimumDistanceEntry(object):
             minimum_distance = self._cache.get(token.word, None)
             if minimum_distance is None:
                 minimum_distance = self._g.minimum_distance_to_entry(token.word)
-                minimum_distance = bucketize_minimum_distance(minimum_distance)
+                #minimum_distance = bucketize_minimum_distance(minimum_distance)
                 self._cache.set(token.word, minimum_distance)
-            result.append(["g_minimum_distance_entry=%d" % minimum_distance])
+            result.append(["g_minimum_distance_entry=%f" % minimum_distance])
         return result
 
 class AllGazetteerClosestEntryType(object):

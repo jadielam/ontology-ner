@@ -106,7 +106,12 @@ class AllGazetteer(object):
                                     self._token_types[token] = []
                                     self._tokens_trie.insert(token)
                                 self._token_types[token].append(e_type)
-                                
+        
+        #This sorting will reduce the dimensionality of features later on.
+        for token, token_types in self._token_types.items():
+            token_types.sort()
+        for entry, entry_types in self._entry_types.items():
+            entry_types.sort()
     
     def minimum_distance_to_token(self, phrase):
         distance_percentage = 0.30
